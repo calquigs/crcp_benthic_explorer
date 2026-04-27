@@ -1,0 +1,7 @@
+erddapy>=2.0
+pandas>=1.5
+numpy>=1.23
+geopandas>=0.12
+shapely>=2.0
+arcgis>=2.2
+pytest>=7.0

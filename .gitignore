@@ -1,0 +1,43 @@
+# Data directories
+data/raw/
+data/processed/
+
+# Legacy files from initial exploration
+CRCP_Benthic_Cover_Hawaii_54cf_1530_7ded.csv
+metadata_hawaii.csv
+percent_covers_hawaii.csv
+labelset.csv
+job_description
+coralnet/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ArcGIS
+*.lock
+*.gdb/

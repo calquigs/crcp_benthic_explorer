@@ -1,0 +1,56 @@
+{
+  "sources": [
+    {
+      "id": "hawaii",
+      "dataset_id": "CRCP_Benthic_Cover_Hawaii",
+      "erddap_server": "https://www.ncei.noaa.gov/erddap",
+      "display_name": "Hawaiian Archipelago",
+      "coralnet_source_id": 372,
+      "expected_bounds": {
+        "min_lat": 18.0,
+        "max_lat": 30.0,
+        "min_lon": -180.0,
+        "max_lon": -154.0
+      }
+    },
+    {
+      "id": "marianas",
+      "dataset_id": "CRCP_Benthic_Cover_CNMI_Guam",
+      "erddap_server": "https://www.ncei.noaa.gov/erddap",
+      "display_name": "Mariana Archipelago",
+      "coralnet_source_id": 373,
+      "expected_bounds": {
+        "min_lat": 13.0,
+        "max_lat": 21.0,
+        "min_lon": 144.0,
+        "max_lon": 146.5
+      }
+    },
+    {
+      "id": "samoa",
+      "dataset_id": "CRCP_Benthic_Cover_American_Samoa",
+      "erddap_server": "https://www.ncei.noaa.gov/erddap",
+      "display_name": "American Samoa",
+      "coralnet_source_id": 295,
+      "expected_bounds": {
+        "min_lat": -15.0,
+        "max_lat": -11.0,
+        "min_lon": -171.5,
+        "max_lon": -168.0
+      }
+    },
+    {
+      "id": "prias",
+      "dataset_id": "CRCP_Benthic_Cover_PRIAs",
+      "erddap_server": "https://www.ncei.noaa.gov/erddap",
+      "display_name": "Pacific Remote Island Areas",
+      "coralnet_source_id": null,
+      "expected_bounds": {
+        "min_lat": -2.0,
+        "max_lat": 29.0,
+        "min_lon": -177.0,
+        "max_lon": 167.0
+      }
+    }
+  ]
+}
