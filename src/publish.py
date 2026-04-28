@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import logging
 import os
+import tempfile
+from pathlib import Path
 from typing import Optional
 
 import geopandas as gpd
-import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +41,15 @@ def _get_gis():
     return gis
 
 
-def _find_existing_item(gis, title: str, folder: Optional[str]) -> Optional[object]:
-    """Search for an existing Feature Layer item by title."""
-    query = f'title:"{title}" AND type:"Feature Service" AND owner:{gis.properties.user.username}'
-    results = gis.content.search(query=query, max_items=10)
-    for item in results:
-        if item.title == title:
-            return item
-    return None
+def _find_existing_items(gis, title: str) -> list:
+    """Search for existing items (Feature Service and GeoJSON) by title."""
+    owner = gis.properties.user.username
+    items = []
+    for item_type in ("Feature Service", "GeoJson"):
+        query = f'title:"{title}" AND type:"{item_type}" AND owner:{owner}'
+        results = gis.content.search(query=query, max_items=10)
+        items.extend(r for r in results if r.title == title)
+    return items
 
 
 def publish_feature_layer(
@@ -59,6 +61,8 @@ def publish_feature_layer(
     overwrite: bool = True,
 ) -> object:
     """Publish a GeoDataFrame as a Hosted Feature Layer on ArcGIS Online.
+
+    Uploads as GeoJSON to avoid the shapefile 10-character column name limit.
 
     Args:
         gdf: GeoDataFrame to publish (must have geometry and CRS set).
@@ -72,39 +76,47 @@ def publish_feature_layer(
     Returns:
         The published arcgis FeatureLayer item.
     """
-    from arcgis.features import GeoAccessor
-
     gis = _get_gis()
 
-    existing = _find_existing_item(gis, title, folder)
+    existing = _find_existing_items(gis, title)
     if existing and overwrite:
-        logger.info("Overwriting existing item: %s (%s)", existing.title, existing.id)
-        existing.delete()
+        for item in existing:
+            logger.info("Deleting existing item: %s (%s, type=%s)", item.title, item.id, item.type)
+            item.delete()
     elif existing and not overwrite:
         raise ValueError(
-            f"Item '{title}' already exists (id={existing.id}). "
-            "Set overwrite=True to replace it."
+            f"Item '{title}' already exists ({len(existing)} item(s)). "
+            "Set overwrite=True to replace."
         )
 
-    # Convert GeoDataFrame to Esri-compatible Spatially Enabled DataFrame
-    sdf = pd.DataFrame.spatial.from_geodataframe(gdf)
+    if folder:
+        existing_folders = {f.name for f in gis.users.me.folders}
+        if folder not in existing_folders:
+            gis.content.create_folder(folder)
+            logger.info("Created AGOL folder: %s", folder)
 
-    item = sdf.spatial.to_featurelayer(
-        title=title,
-        gis=gis,
-        folder=folder,
-        tags=tags,
-    )
+    with tempfile.TemporaryDirectory() as tmp:
+        geojson_path = Path(tmp) / f"{title}.geojson"
+        gdf.to_file(geojson_path, driver="GeoJSON")
 
-    # Update item metadata
-    item.update(item_properties={
-        "description": description,
-        "snippet": f"CRCP benthic cover site summaries – {title}",
-        "accessInformation": "NOAA Coral Reef Conservation Program (CRCP)",
-        "licenseInfo": "Public domain – U.S. Government Work",
-    })
+        geojson_item = gis.content.add(
+            item_properties={
+                "title": title,
+                "type": "GeoJson",
+                "tags": ",".join(tags),
+                "description": description,
+                "snippet": f"CRCP benthic cover site summaries – {title}",
+                "accessInformation": "NOAA Coral Reef Conservation Program (CRCP)",
+                "licenseInfo": "Public domain – U.S. Government Work",
+            },
+            data=str(geojson_path),
+            folder=folder,
+        )
+        logger.info("Uploaded GeoJSON item: %s (%s)", geojson_item.title, geojson_item.id)
 
-    logger.info("Published Feature Layer: %s (id=%s)", item.title, item.id)
+        item = geojson_item.publish()
+        logger.info("Published Feature Layer: %s (id=%s)", item.title, item.id)
+
     return item
 
 
