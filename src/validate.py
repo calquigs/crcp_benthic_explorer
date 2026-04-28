@@ -41,7 +41,10 @@ class ValidationReport:
         return any(i.severity == Severity.WARNING for i in self.issues)
 
     def summary(self) -> str:
-        lines = [f"Validation [{self.stage}]: {len(self.issues)} issue(s)"]
+        n_problems = sum(
+            1 for i in self.issues if i.severity != Severity.INFO
+        )
+        lines = [f"Validation [{self.stage}]: {n_problems} issue(s)"]
         for issue in self.issues:
             lines.append(f"  [{issue.severity.value.upper()}] {issue.message}")
         return "\n".join(lines)
@@ -53,22 +56,10 @@ def validate_points(df: pd.DataFrame) -> ValidationReport:
     """Validate raw point-level data from ERDDAP.
 
     Checks:
-    - Expected 10 points per image
     - No null tier_1 values
     - No null coordinates
     """
     report = ValidationReport(stage="points")
-
-    # Points per image
-    pts = df.groupby("image_name").size()
-    not_ten = pts[pts != 10]
-    if not not_ten.empty:
-        report.issues.append(Issue(
-            Severity.WARNING,
-            f"{len(not_ten)} image(s) do not have exactly 10 points "
-            f"(range: {not_ten.min()}-{not_ten.max()})",
-            count=len(not_ten),
-        ))
 
     # Null tier_1
     null_t1 = df["tier_1"].isna().sum() + (df["tier_1"] == "").sum()

@@ -168,6 +168,7 @@ def images_to_sites(images_df: pd.DataFrame) -> pd.DataFrame:
             "latitude": grp["latitude"].median(),
             "longitude": grp["longitude"].median(),
             "n_images": len(grp),
+            "date_": grp["date_"].iloc[0],
             "representative_image_url": _pick_representative_image(grp),
         }
 

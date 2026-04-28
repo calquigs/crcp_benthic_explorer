@@ -41,3 +41,10 @@ Thumbs.db
 # ArcGIS
 *.lock
 *.gdb/
+
+# Local-only docs and toolbox (not yet ready for repo)
+docs/agol_setup_guide.md
+toolbox/CRCPBenthicExplorer.pyt
+
+# Scratch files
+Untitled
