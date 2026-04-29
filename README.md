@@ -1,6 +1,8 @@
 # CRCP Benthic Explorer
 
-An automated Python pipeline that queries NOAA's [ERDDAP](https://www.ncei.noaa.gov/erddap/) service for Coral Reef Conservation Program (CRCP) benthic cover annotation data, aggregates it from point-level to site-year summaries, and publishes the results as an ArcGIS Online Hosted Feature Layer powering an interactive [Experience Builder](https://experience.arcgis.com/) web application.
+An automated Python pipeline that queries NOAA's [ERDDAP](https://www.ncei.noaa.gov/erddap/) service for Coral Reef Conservation Program (CRCP) benthic cover annotation data, aggregates it from point-level to site-year summaries, and publishes the results as an ArcGIS Online Hosted Feature Layer powering an interactive [Experience Builder](https://experience.arcgis.com/experience/b4432e62615f4bb8ba4e865b480624e2) web application.
+
+<img width="1706" height="909" alt="Screenshot 2026-04-28 at 7 46 31 PM" src="https://github.com/user-attachments/assets/c3d18652-ee25-4c1b-a4dd-00f2417c5f68" />
 
 ## Architecture
 
